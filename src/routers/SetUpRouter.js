@@ -1,6 +1,7 @@
 import { Route, Routes } from "react-router-dom";
 import Login from "../pages/Login";
 import HomePage from "../pages/HomePage";
+import Signers from "../pages/Signers";
 
 export default function SetUpRouter() {
     return (
@@ -8,6 +9,7 @@ export default function SetUpRouter() {
             <Routes>
                 <Route path="/login" element={<Login />} />
                 <Route path="/" element={<HomePage />} />
+                <Route path="/signers" element={<Signers />} />
             </Routes>
         </div>
     );  

@@ -24,14 +24,14 @@ import { BrowserRouter } from "react-router-dom";
 //   }
 // }
 
-const cors = require("cors");
-const express = require("express");
-const app = express();
+// const cors = require("cors");
+// const express = require("express");
+// const app = express();
 
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true
-}));
+// app.use(cors({
+//   origin: "http://103.175.221.36:8000",
+//   credentials: true
+// }));
 
 function App() {
   return (
