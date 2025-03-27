@@ -1,6 +1,10 @@
 // import axios from "axios";
 // import { useEffect, useRef, useState } from "react";
 
+import axios from "axios";
+import { useEffect, useState } from "react"
+import { Form } from "react-router-dom";
+
 // const Signers = () => {
 //     const [signers, setSigners] = useState([]);
 
@@ -69,50 +73,73 @@
 
 // export default Signers;
 
-import axios from "axios";
-import { useEffect, useRef, useState } from "react";
-
 const Signers = () => {
-    const [signer, setSigner] = useState([]);
+    const [signers, setSigners] = useState([]);
+    const [searchSigner, setSearchSigner] = useState('');
+    const [filteredSigners, setFilteredSigners ] = useState([]);
     const baseUrl = "http://103.175.221.36:8000/signer";
+    const accessToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySWQiOjEsImlzcyI6IkFOVE0iLCJleHAiOjE3NTA2ODI3ODgsIm5iZiI6MTc0MjkwNjc4OCwiaWF0IjoxNzQyOTA2Nzg4fQ.wzYMqMpSfMWip9GTo0icHO_KZDHuFmmFs4-ja3LIdG0";
 
-    const getSigners = () => {
-        axios.get(baseUrl)
-        .then((response) => {
-            console.log("Response data:", response.data); 
-            setSigner(response.data);
-        })
-        .catch((error) => console.error("Error :", error));
-    };
+    const getSigners = async () => {
+        try {
+            const response = await axios.get("/signer", {
+                headers:{
+                    Authorization: `Bearer ${accessToken}`,
+                    "Content-Type": "application/x-www-form-urlencoded",
+                }
+            })
+            console.log("data:",response.data.data);
+            setSigners(response.data.data);
+        } catch(error){
+            console.log("error:",error)
+        };
+    }
 
-    const fetch = useRef(true);
+    const handleInputChange = (e) => {
+        const searchName = e.target.value;
+        setSearchSigner(searchName);
+
+        const filteredItems = signers.filter((signer) =>
+            signer.name.toLowerCase().includes(searchName.toLowerCase())
+        );
+
+        setFilteredSigners(filteredItems);
+    }
 
     useEffect(() => {
-        if (fetch.current) {
-            getSigners();
-            fetch.current = false;
-        }
+        getSigners();
     }, []);
 
-    const getData = () => {
-        console.log("signer:", signer);
-    };
-
-    return (
-        <div className="signer">
-            <p>Hai</p>
-            <button onClick={getData}>Tampilkan Data</button>
+    return(
+        <div>
+            <div>
+                <form>
+                    <input
+                    type="text"
+                    value={searchSigner}
+                    onChange={handleInputChange}
+                    placeholder="Cari nama signer"
+                    />
+                </form>
+            </div>
             <ul>
-                {signer.length > 0 ? (
-                    signer.map((item, index) => (
-                        <li key={index}>{item.name} - {item.email}</li>
-                    ))
-                ) : (
-                    <p>Data tidak ditemukan</p>
-                )}
+            {(searchSigner ? filteredSigners : signers).length > 0 ? (
+                (searchSigner ? filteredSigners : signers).map((signer) => (
+                    <li key={signer.id}>
+                        <strong>{signer.name}</strong> - {signer.email} <br />
+                        <em>{signer.position}</em> <br />
+                        <p>Phone: {signer.phone}</p>
+                        {signer.signatures.length > 0 && (
+                            <p>Signature: {signer.signatures[0].name}</p>
+                        )}
+                    </li>
+                ))
+            ): (
+                <p>Data Tidak Ada</p>
+            )}
             </ul>
         </div>
-    );
-};
+    )
+}
 
 export default Signers;
